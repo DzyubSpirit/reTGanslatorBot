@@ -9,6 +9,7 @@ import (
 	urlpath "path"
 
 	"github.com/DzyubSpirit/reTGanslatorBot/bot"
+	"github.com/DzyubSpirit/reTGanslatorBot/config"
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
@@ -50,7 +51,7 @@ func NewServerFromEnv() *Server {
 		log.Fatalf("Failed to read config.json: %v", err)
 	}
 
-	var config bot.Config
+	var config config.Config
 	if err = json.Unmarshal(configBytes, &config); err != nil {
 		log.Fatalf("Failed to parse config.json: %v", err)
 	}

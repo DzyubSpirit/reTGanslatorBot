@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/DzyubSpirit/reTGanslatorBot/bot"
+	"github.com/DzyubSpirit/reTGanslatorBot/config"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
@@ -26,7 +27,7 @@ func main() {
 		log.Fatalf("Failed to read config.json: %v", err)
 	}
 
-	var config bot.Config
+	var config config.Config
 	if err = json.Unmarshal(configBytes, &config); err != nil {
 		log.Fatalf("Failed to parse config.json: %v", err)
 	}

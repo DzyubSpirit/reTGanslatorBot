@@ -4,23 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"sort"
 	"strings"
 	"unicode"
 
+	"github.com/DzyubSpirit/reTGanslatorBot/config"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
-
-type Config struct {
-	Chats        []Chat   `json:"chats"`
-	HelpContacts []string `json:"help_contacts"`
-}
-
-type Chat struct {
-	ID         int64    `json:"id"`
-	Aliases    []string `json:"aliases"`
-	ChildChats []Chat   `json:"child_chats"`
-}
 
 type BotAPI interface {
 	AnswerInlineQuery(config tgbotapi.InlineConfig) (tgbotapi.APIResponse, error)
@@ -29,10 +18,10 @@ type BotAPI interface {
 
 type Handler struct {
 	bot    BotAPI
-	config Config
+	config config.Config
 }
 
-func NewHandler(config Config, bot BotAPI) *Handler {
+func NewHandler(config config.Config, bot BotAPI) *Handler {
 	return &Handler{
 		bot:    bot,
 		config: config,
@@ -41,41 +30,6 @@ func NewHandler(config Config, bot BotAPI) *Handler {
 
 func hasChatTag(chatName, text string) bool {
 	return strings.Contains(strings.ToLower(text), "*"+strings.ToLower(chatName))
-}
-
-func (config Config) AllAliases() []string {
-	aliases := make(map[string]bool)
-	queue := config.Chats
-	for len(queue) > 0 {
-		chat := queue[0]
-		queue = queue[1:]
-
-		for _, alias := range chat.Aliases {
-			aliases[alias] = true
-		}
-		queue = append(queue, chat.ChildChats...)
-	}
-	var aliasesList []string
-	for alias := range aliases {
-		aliasesList = append(aliasesList, alias)
-	}
-	sort.Slice(aliasesList, func(i, j int) bool {
-		return strings.ToLower(aliasesList[i]) < strings.ToLower(aliasesList[j])
-	})
-	return aliasesList
-}
-
-func (config Config) AllChats() []Chat {
-	var allChats []Chat
-	queue := config.Chats
-	for len(queue) > 0 {
-		chat := queue[0]
-		queue = queue[1:]
-
-		allChats = append(allChats, chat)
-		queue = append(queue, chat.ChildChats...)
-	}
-	return allChats
 }
 
 func (bh Handler) inlineQuery(update tgbotapi.Update) {
